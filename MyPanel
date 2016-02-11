@@ -1,0 +1,200 @@
+package com.neumont.csc150.PongView;
+
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.util.Random;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.Timer;
+import com.neumont.csc150.PongController.IPongMaster;
+
+public class MyPanel extends JPanel implements ActionListener,KeyListener{
+	private static final long serialVersionUID = 1L;
+	private Random randy = new Random();
+	private int ballW, ballH, ballX, ballY, deltaX, deltaY;
+	private Timer timer = new Timer(15, this);
+	private IPongMaster master;
+	private int rightScore = 0;
+	private int leftScore = 0;
+	private int padW, padH, pad1X, pad2X, pad1Y, pad2Y;
+	int pad1DY, pad2DY;
+	private int time = 0;
+
+	public MyPanel(JFrame frame, IPongMaster master){
+
+		this.deltaX = randy.nextInt(5)+1;
+		this.deltaY = randy.nextInt(5)+1;
+		timer.start();
+		this.master = master;
+		ballW = 25;
+		ballH = 25;
+		ballX = 500;
+		ballY = 400;
+		padW = 30;
+		padH = 155;
+		pad1X = 30;
+		pad1Y = 250;
+		pad2X = 935;
+		pad2Y = 250;
+		pad1DY = 0;
+		pad2DY = 0;
+	}
+
+	@Override
+	public void paint(Graphics g){
+		super.paint(g);
+		this.setBackground(Color.BLACK);
+		g.setColor(Color.WHITE);
+		g.fillRect(ballX, ballY, ballW, ballH);
+		g.fillRect(pad1X, pad1Y, padW, padH);
+		g.fillRect(pad2X, pad2Y, padW, padH);
+		g.setFont(new Font("Arial", 1, 48));
+		g.drawString(String.valueOf(rightScore), 250, 50);
+		g.drawString(String.valueOf(leftScore), 750, 50);
+		this.repaint();
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		if(time < 10){
+			time++;
+		}
+		if(this.ballX + this.ballW >= this.getWidth() && time > 2){
+			master.leftPlayerScore();
+			this.deltaX *= -1;
+		}
+		if(this.ballX <= 0 && time > 2){
+			master.rightPlayerScore();
+		}
+		if(this.ballY + this.ballH >= this.getHeight() || this.ballY <= 0){
+			this.deltaY *= -1;
+		}
+		if((this.ballX <= this.pad1X + 30 && this.ballX > this.pad1X + 15) && (this.pad1Y - 15 <= this.ballY && this.ballY <= this.pad1Y + 155)){
+			if(deltaX > -10){
+				deltaX--;
+			}
+			if(this.ballY < this.pad1Y + 78 && this.ballY > this.pad1Y){
+				this.deltaY -= 3;
+			}
+			if(this.ballY > this.pad1Y + 78 && this.ballY < this.pad1Y + 155){
+				this.deltaY += 3;
+			}
+			deltaX *= -1;
+		}
+		if((this.ballX >= this.pad2X - 30 && this.ballX < this.pad2X - 15) && (this.pad2Y - 15 <= this.ballY && this.ballY <= this.pad2Y + 155)){
+			if(deltaX < 10){
+				deltaX++;
+			}
+			if(this.ballY < this.pad2Y + 78 && this.ballY > this.pad2Y){
+				this.deltaY -= 3;
+			}
+			if(this.ballY > this.pad2Y + 78 && this.ballY < this.pad2Y + 155){
+				this.deltaY += 3;
+			}
+			deltaX *= -1;
+		}
+		this.ballX += deltaX;
+		this.ballY += deltaY;
+		this.pad1Y += pad1DY;
+		this.pad2Y += pad2DY;
+		if(pad1DY > 0){
+			pad1DY -= 1;
+		}
+		if(pad1DY < 0){
+			pad1DY += 1;
+		}
+		if(pad2DY > 0){
+			pad2DY -= 1;
+		}
+		if(pad2DY < 0){
+			pad2DY += 1;
+		}
+		this.repaint();
+		this.getFocus();
+		this.grabFocus();
+		if(pad1Y < 10){
+			pad1Y = 10;
+		}
+		if(pad1Y + 155 > 750){
+			pad1Y = 750 - 155;
+		}
+		if(pad2Y < 10){
+			pad2Y = 10;
+		}
+		if(pad2Y + 155 > 750){
+			pad2Y = 750 - 155;
+		}
+	}
+
+	public void resetBall(){
+		this.ballX = 500;
+		this.ballY = 400;
+		this.deltaX = 5;
+		this.deltaY = randy.nextInt(10)-5;
+		if(deltaY == 0){
+			deltaY = randy.nextInt(10)-5;
+		}
+
+	}
+
+	public void getFocus(){
+		this.setFocusable(true);
+		this.addKeyListener(this);
+		this.setRequestFocusEnabled(true);
+		this.requestFocus();
+	}
+
+	public int getRightScore() {
+		return rightScore;
+	}
+
+	public void setRightScore(int rightScore) {
+		this.rightScore = rightScore;
+	}
+
+	public int getLeftScore() {
+		return leftScore;
+	}
+
+	public void setLeftScore(int leftScore) {
+		this.leftScore = leftScore;
+	}
+
+	@Override
+	public void keyPressed(KeyEvent e) {
+		int key = e.getKeyCode();
+		if(key == KeyEvent.VK_Q && pad1Y >=0 && pad1Y + 155 <= 800){
+			pad1DY = -10;
+		}
+		if(key == KeyEvent.VK_A && pad1Y >=0 && pad1Y + 155 <= 800){
+			pad1DY = 10;
+		}
+		if(key == KeyEvent.VK_UP && pad2Y >=0 && pad2Y + 155 <= 800){
+			pad2DY = -10;
+		}
+		if(key == KeyEvent.VK_DOWN && pad2Y >=0 && pad2Y + 155 <= 800){
+			pad2DY = 10;
+		}
+
+		this.repaint();
+		/*pad1DY = 0;
+		pad2DY = 0;*/
+	}
+
+	@Override
+	public void keyReleased(KeyEvent e) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void keyTyped(KeyEvent e) {
+
+
+	}
+}
