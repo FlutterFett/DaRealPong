@@ -1,0 +1,29 @@
+package com.neumont.csc150.PongController;
+
+import com.neumont.csc150.PongView.PongGUI;
+
+public class PongMaster implements IPongMaster{
+	private PongGUI ui;
+	
+	public PongMaster(){
+		ui = new PongGUI(this);
+	}
+
+	@Override
+	public void onGameStart() {
+		ui.initGUI();
+	}
+
+	@Override
+	public void leftPlayerScore() {
+		ui.mainPanel.setRightScore(ui.mainPanel.getRightScore() + 1);
+		ui.mainPanel.resetBall();
+	}
+
+	@Override
+	public void rightPlayerScore() {
+		ui.mainPanel.setLeftScore(ui.mainPanel.getLeftScore() + 1);
+		ui.mainPanel.resetBall();
+		
+	}
+}
