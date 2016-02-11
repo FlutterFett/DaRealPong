@@ -1,0 +1,51 @@
+package com.neumont.csc150.PongView;
+
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import com.neumont.csc150.PongController.IPongMaster;
+import com.neumont.csc150.PongModel.Paddle;
+import com.neumont.csc150.PongModel.Score;
+
+public class PongGUI extends JPanel implements IPongGUI{
+	private static final long serialVersionUID = 1L;
+	private JFrame frame;
+	private IPongMaster master;
+	public MyPanel mainPanel;
+	
+	public PongGUI(IPongMaster master){
+		this.master = master;
+	}
+	
+	public void initGUI(){
+		this.frame = new JFrame("PONG");
+		mainPanel = new MyPanel(frame, master);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.getContentPane().add(mainPanel);
+		frame.setVisible(true);
+		frame.pack();
+		frame.setSize(1000, 800);
+		frame.setLocationRelativeTo(null);
+		frame.setFocusable(false);
+		}
+
+	@Override
+	public void createMainMenu() {
+		JButton start = new JButton("Start");
+		start.addActionListener(new ActionListener(){
+		
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				JOptionPane.showMessageDialog(frame, "Hi.");
+			}
+		});
+		this.mainPanel.add(start);
+
+	}
+	
+}
